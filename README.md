@@ -1,5 +1,5 @@
 # kommun-scraper
-Scraper for nacka kommun nyheter on the website: https://www.nacka.se/nyheter-start/ 
+Scraper for Nacka kommun nyheter on the website: https://www.nacka.se/nyheter-start/ 
 
 first, download repo: 
 ```
