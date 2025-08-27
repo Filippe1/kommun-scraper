@@ -4,7 +4,7 @@ const fs = require('fs');
 const { URL } = require('url');
 
 // Configuration
-const baseUrl = 'https://herbsaremyworld.com'; // Replace with the website you want to scrape
+const baseUrl = 'https://www.nacka.se/nyheter-start/'; // Replace with the website you want to scrape
 const visitedUrls = new Set(); // Track visited URLs to avoid duplicates
 const allContent = []; // Store all scraped content
 
@@ -35,6 +35,14 @@ function extractLinks(html, baseUrl) {
     return links;
 }
 
+function cleanText(text) {
+    return text
+        .replace(/\t+/g, ' ')   // remove tabs (\t → space)
+        .replace('\n', ' ')   // removes \n from text
+        .replace(/[^\x00-\x7F]+/g, '') // remove non-UTF8/stray chars (optional)
+        .trim();
+}
+
 // Function to extract content from a page
 function extractContent(html) {
     const $ = cheerio.load(html);
@@ -44,12 +52,12 @@ function extractContent(html) {
 
     // Extract headings (h1, h2, h3)
     $('h1, h2, h3').each((i, element) => {
-        headings.push($(element).text());
+        headings.push(cleanText($(element).text()));
     });
 
     // Extract paragraphs
     $('p').each((i, element) => {
-        paragraphs.push($(element).text());
+        paragraphs.push(cleanText($(element).text()));
     });
 
     return {
@@ -77,8 +85,25 @@ function isImageUrl(url) {
 const maxPages = 50; // Limit to 50 pages
 let pageCount = 0;
 
+// Add a list of restricted URLs
+const restrictedUrls = [
+    'https://www.nacka.se/nyheter-start/#content',
+    'https://www.nacka.se/nyheter-start/#header',
+    'https://www.nacka.se/nyheter-start/?page'
+    // Add more full URLs here
+];
+
+// Check if a URL is restricted
+function isRestrictedUrl(url) {
+    return restrictedUrls.some(restricted => url.startsWith(restricted));
+}
+
+
+
+
 async function crawl(url, depth = 0, maxDepth = 3) {
-    if (visitedUrls.has(url) || depth > maxDepth || pageCount >= maxPages || !isRelevantUrl(url) || isImageUrl(url)) return;
+    if (visitedUrls.has(url) || depth > maxDepth || pageCount >= maxPages || !isRelevantUrl(url) || isImageUrl(url) ||
+    isRestrictedUrl(url)) return;
     visitedUrls.add(url);
     pageCount++;
 
@@ -98,33 +123,33 @@ async function crawl(url, depth = 0, maxDepth = 3) {
     }
 }
 
-// Function to save all content to a Markdown file
-function saveToMarkdown() {
-    let markdownContent = '';
 
-    allContent.forEach((page) => {
-        markdownContent += `# ${page.title}\n\n`;
-        markdownContent += `**URL:** [${page.url}](${page.url})\n\n`;
+// Minimum URL length (adjust as needed)
+const minUrlLength = 44;
 
-        markdownContent += '## Headings\n\n';
-        page.headings.forEach((heading) => {
-            markdownContent += `- ${heading}\n`;
-        });
 
-        markdownContent += '\n## Paragraphs\n\n';
-        page.paragraphs.forEach((paragraph) => {
-            markdownContent += `${paragraph}\n\n`;
-        });
+// Function to save all content to a JSON file
+// Function to save all content to a JSON file with URL length filter
+function saveToJson() {
+    const jsonData = allContent
+        .filter(page => page.url.length >= minUrlLength) // 🔎 Filter by URL length
+        .map(page => ({
+            url: page.url,
+            content: {
+                title: page.title,
+                headings: page.headings,
+                paragraphs: page.paragraphs
+            }
+        }));
 
-        markdownContent += '---\n\n'; // Separator between pages
-    });
-
-    fs.writeFileSync('output.md', markdownContent);
-    console.log('All content saved to output.md');
+    fs.writeFileSync('./output/nyheter.json', JSON.stringify(jsonData, null, 2));
+    console.log(`All content saved to output.json (filtered by min URL length ${minUrlLength})`);
 }
+
 
 // Start crawling from the base URL
 (async () => {
     await crawl(baseUrl);
-    saveToMarkdown();
+    saveToJson();
 })();
+
