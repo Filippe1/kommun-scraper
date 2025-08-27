@@ -1,6 +1,9 @@
 # kommun-scraper
 Scraper for Nacka kommun nyheter on the website: https://www.nacka.se/nyheter-start/ 
 
+Used javascript for scraping and stored output in JSON format as it is commonly used, added script to 
+create and populate local sqlite database since it is easy to access and manage locally. The data can then be analysed by LLM or other methods. 
+
 first, download repo: 
 ```
 git clone https://github.com/Filippe1/kommun-scraper.git
@@ -10,6 +13,9 @@ then install all packages if needed:
 ```
 npm install
 ```
+
+For best results, you can delete files in /db/ and /output/ folder to ensure new files are created when running the below commands.
+
 
 run the following command in terminal to scrape the news articles: 
 ```
