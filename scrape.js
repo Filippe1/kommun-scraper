@@ -143,7 +143,7 @@ function saveToJson() {
         }));
 
     fs.writeFileSync('./output/nyheter.json', JSON.stringify(jsonData, null, 2));
-    console.log(`All content saved to output.json (filtered by min URL length ${minUrlLength})`);
+    console.log(`All content saved to nyheter.json (filtered by min URL length ${minUrlLength})`);
 }
 
 
