@@ -31,6 +31,6 @@ The database will appear in /db/ folder.
 
 # Other information
 
-Scrapes only 5 most recent news articles, can be improved to scrape all of them. Formatting in database can be improved by eliminating lines. 
+Scrapes only 5 most recent news articles, can be improved to scrape all of them. Formatting in database can be improved by eliminating empty lines. 
 
 
