@@ -1,7 +1,7 @@
 # kommun-scraper
 Scraper for Nacka kommun nyheter on the website: https://www.nacka.se/nyheter-start/ 
 
-I used javascript for scraping and stored output in JSON format as it is widely used and human-readable. I aslo added script to 
+I used javascript for scraping and stored output in JSON format as it is widely used and human-readable. I also added script to 
 create and populate local sqlite database since it is easy to access and manage locally. This set up was chosen since it is easy to check the json file for errors and to rescrape without affecting the sqlite database. The data can then be analysed by LLM or other methods. 
 
 first, download repo: 
